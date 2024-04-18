@@ -42,7 +42,12 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        //
+        $tasks = $project->tasks()->paginate(5);
+
+        return Inertia::render('Projects/Show', [
+            'project' => $project,
+            'tasks' => $tasks
+        ]);
     }
 
     /**

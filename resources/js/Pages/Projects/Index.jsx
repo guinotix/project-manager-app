@@ -33,7 +33,11 @@ export default function Index({ auth, projects }) {
                                         projects.data.map(project => (
                                             <tr key={project.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                                 <th className="px-3 py-2">{project.id}</th>
-                                                <td className="px-3 py-2">{project.name}</td>
+                                                <th className="px-3 py-2 hover:underline">
+                                                    <Link href={route("projects.show", project.id)}>
+                                                        {project.name}
+                                                    </Link>
+                                                </th>
                                                 <td className="px-3 py-2">
                                                     <span className={"px-2 py-1 rounded text-slate-50 " + STATUS_CLASS_MAP[project.status]}>
                                                         {STATUS_TEXT_MAP[project.status]}
