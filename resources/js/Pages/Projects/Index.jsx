@@ -45,7 +45,7 @@ export default function Index({ auth, projects }) {
                                                 </td>
                                                 <td className="px-3 py-2">{project.created_at}</td>
                                                 <td className="px-3 py-2">{project.due_date}</td>
-                                                <td className="px-3 py-2">{project.created_by}</td>
+                                                <td className="px-3 py-2">{project.created_by.name}</td>
                                                 <td className="px-3 py-2">
                                                     <Link href={route("projects.edit", project.id)} className="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1">
                                                         Edit
@@ -59,10 +59,7 @@ export default function Index({ auth, projects }) {
                                     }
                                 </tbody>
                             </table>
-                            <Paginator links={projects.links} />
-                            {/* <pre>
-                                {JSON.stringify(projects, undefined, 2)}
-                            </pre> */}
+                            <Paginator links={projects.meta.links} />
                         </div>
                     </div>
                 </div>

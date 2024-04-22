@@ -31,7 +31,7 @@ export default function TasksTable({ tasks }) {
                                 </td>
                                 <td className="px-3 py-2">{task.created_at}</td>
                                 <td className="px-3 py-2">{task.due_date}</td>
-                                <td className="px-3 py-2">{task.created_by}</td>
+                                <td className="px-3 py-2">{task.created_by.name}</td>
                                 <td className="px-3 py-2">
                                     <Link href={route("tasks.edit", task.id)} className="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-1">
                                         Edit
@@ -45,10 +45,7 @@ export default function TasksTable({ tasks }) {
                     }
                 </tbody>
             </table>
-            <Paginator links={tasks.links} />
-            {/* <pre>
-                {JSON.stringify(tasks, undefined, 2)}
-            </pre> */}
+            <Paginator links={tasks.meta.links} />
         </div>
         </>
     );

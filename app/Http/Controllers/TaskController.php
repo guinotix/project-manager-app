@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -17,7 +18,7 @@ class TaskController extends Controller
         $tasks = Task::paginate(8);
 
         return Inertia::render('Tasks/Index', [
-            'tasks' => $tasks,
+            'tasks' => TaskResource::collection($tasks),
         ]);
     }
 

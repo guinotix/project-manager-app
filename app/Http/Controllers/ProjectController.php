@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProjectResource;
+use App\Http\Resources\TaskResource;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -17,7 +19,7 @@ class ProjectController extends Controller
         $projects = Project::paginate(3);
 
         return Inertia::render('Projects/Index', [
-            'projects' => $projects,
+            'projects' => ProjectResource::collection($projects),
         ]);
     }
 
@@ -45,8 +47,8 @@ class ProjectController extends Controller
         $tasks = $project->tasks()->paginate(5);
 
         return Inertia::render('Projects/Show', [
-            'project' => $project,
-            'tasks' => $tasks
+            'project' => new ProjectResource($project),
+            'tasks' => TaskResource::collection($tasks)
         ]);
     }
 
