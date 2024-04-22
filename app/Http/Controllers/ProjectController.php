@@ -6,6 +6,7 @@ use App\Http\Resources\ProjectResource;
 use App\Http\Resources\TaskResource;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -20,6 +21,7 @@ class ProjectController extends Controller
 
         return Inertia::render('Projects/Index', [
             'projects' => ProjectResource::collection($projects),
+            'success' => session('success'),
         ]);
     }
 
@@ -28,7 +30,7 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Projects/Create');
     }
 
     /**
@@ -36,7 +38,18 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|max:255',
+            'description' => 'nullable|string',
+            'due_date' => 'nullable|date',
+            'status' => 'required|' . Rule::in(['pending', 'in_progress', 'completed']),
+        ]);
+        $validated['created_by'] = auth()->user()->id;
+        $validated['updated_by'] = auth()->user()->id;
+
+        Project::create($validated);
+        
+        return redirect(route('projects.index'))->with('success', 'Project created');
     }
 
     /**
@@ -74,6 +87,6 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
         $project->delete();
-        return redirect(route('projects.index'));
+        return redirect(route('projects.index'))->with('success', 'Project deleted');
     }
 }
