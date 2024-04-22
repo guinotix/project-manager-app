@@ -70,7 +70,9 @@ class ProjectController extends Controller
      */
     public function edit(Project $project)
     {
-        //
+        return Inertia::render('Projects/Edit', [
+            'project' => new ProjectResource($project),
+        ]);
     }
 
     /**
@@ -78,7 +80,17 @@ class ProjectController extends Controller
      */
     public function update(Request $request, Project $project)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|max:255',
+            'description' => 'nullable|string',
+            'due_date' => 'nullable|date',
+            'status' => 'required|' . Rule::in(['pending', 'in_progress', 'completed']),
+        ]);
+        $validated['updated_by'] = auth()->user()->id;
+
+        $project->update($validated);
+
+        return redirect(route('projects.index'))->with('success', 'Project updated');
     }
 
     /**
