@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProjectResource;
 use App\Http\Resources\TaskResource;
+use App\Http\Resources\UserResource;
+use App\Models\Project;
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -19,6 +24,7 @@ class TaskController extends Controller
 
         return Inertia::render('Tasks/Index', [
             'tasks' => TaskResource::collection($tasks),
+            'success' => session('success'),
         ]);
     }
 
@@ -27,7 +33,13 @@ class TaskController extends Controller
      */
     public function create()
     {
-        //
+        $projects = Project::query()->orderBy('name', 'asc')->get();
+        $users = User::query()->orderBy('name', 'asc')->get();
+
+        return Inertia::render('Tasks/Create', [
+            'projects' => ProjectResource::collection($projects),
+            'users' => UserResource::collection($users),
+        ]);
     }
 
     /**
@@ -35,7 +47,21 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|max:255',
+            'description' => 'nullable|string',
+            'due_date' => 'nullable|date',
+            'status' => 'required|' . Rule::in(['pending', 'in_progress', 'completed']),
+            'priority' => 'required|' . Rule::in(['low', 'medium', 'high']),
+            'project_id' => 'required|exists:projects,id',
+            'assigned_to' => 'nullable|exists:users,id',
+        ]);
+        $validated['created_by'] = auth()->user()->id;
+        $validated['updated_by'] = auth()->user()->id;
+
+        Task::create($validated);
+        
+        return redirect(route('tasks.index'))->with('success', 'Task created');
     }
 
     /**
@@ -43,7 +69,10 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-        //
+        return Inertia::render('Tasks/Show', [
+            // 'project' => new ProjectResource($project),
+            'task' => new TaskResource($task)
+        ]);
     }
 
     /**
@@ -51,7 +80,14 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
-        //
+        $projects = Project::query()->orderBy('name', 'asc')->get();
+        $users = User::query()->orderBy('name', 'asc')->get();
+
+        return Inertia::render('Tasks/Edit', [
+            'task' => new TaskResource($task),
+            'projects' => ProjectResource::collection($projects),
+            'users' => UserResource::collection($users),
+        ]);
     }
 
     /**
@@ -59,7 +95,20 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|max:255',
+            'description' => 'nullable|string',
+            'due_date' => 'nullable|date',
+            'status' => 'required|' . Rule::in(['pending', 'in_progress', 'completed']),
+            'priority' => 'required|' . Rule::in(['low', 'medium', 'high']),
+            'project_id' => 'required|exists:projects,id',
+            'assigned_to' => 'nullable|exists:users,id',
+        ]);
+        $validated['updated_by'] = auth()->user()->id;
+
+        $task->update($validated);
+
+        return redirect(route('tasks.index'))->with('success', 'Task updated');
     }
 
     /**
@@ -67,6 +116,7 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        //
+        $task->delete();
+        return redirect(route('tasks.index'))->with('success', 'Task deleted');
     }
 }
