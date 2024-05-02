@@ -28,6 +28,16 @@ class TaskController extends Controller
         ]);
     }
 
+    public function indexUserTasks()
+    {
+        $tasks = Task::query()->where('assigned_to', auth()->user()->id);
+
+        return Inertia::render('Tasks/Index', [
+            'tasks' => TaskResource::collection($tasks),
+            'success' => session('success'),
+        ]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
