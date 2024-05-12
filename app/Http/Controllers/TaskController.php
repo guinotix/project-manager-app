@@ -30,7 +30,7 @@ class TaskController extends Controller
 
     public function indexUserTasks()
     {
-        $tasks = Task::query()->where('assigned_to', auth()->user()->id);
+        $tasks = Task::query()->where('assigned_to', auth()->user()->id)->paginate(8);
 
         return Inertia::render('Tasks/Index', [
             'tasks' => TaskResource::collection($tasks),
