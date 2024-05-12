@@ -16,15 +16,17 @@ class TaskFactory extends Factory
      */
     public function definition(): array
     {
+        $ownerId = fake()->numberBetween(1, 2);
+
         return [
             'name' => fake()->sentence(),
             'description' => fake()->realText(),
             'due_date' => fake()->dateTimeBetween('now', '+1 year'),
             'status' => fake()->randomElement(['pending', 'in_progress', 'completed']),
             'priority' => fake()->randomElement(['low', 'medium', 'high']),
-            'assigned_to' => 1,
-            'created_by' => 1,
-            'updated_by' => 1,
+            'assigned_to' => $ownerId,
+            'created_by' => $ownerId,
+            'updated_by' => $ownerId,
         ];
     }
 }
